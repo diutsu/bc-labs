@@ -1,0 +1,5 @@
+<p>This is the about view.</p>
+<pre>{
+<p ng-repeat="row in acid">  "{{row}}":
+  {<br/>    <span  ng-repeat="column in acid">"{{column}}": {{matrix[$index][$parent.$index]}}<span ng-hide="$last">,</span> </span><br/>  }<span ng-hide="$last">,</span></p>}
+</pre>

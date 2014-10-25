@@ -1,0 +1,29 @@
+<p>This is the about view.</p>
+<div>
+<style>
+.table td,th {
+   text-align: right;   
+}
+</style>
+{{matrix}}
+<table class="table table-bordered">
+<thead>
+<tr>
+<th>
+</th>
+<th ng-repeat="column in acid">{{column}}
+</th>
+</tr>
+</thead>
+<tbody>
+<tr ng-repeat="row in acid">
+<th>
+{{row}}
+</th>
+<td ng-repeat="column in acid">{{matrix[row][column]}}
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+{{matrix}}
