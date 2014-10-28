@@ -1,0 +1,90 @@
+<h1>Lab 01</h2>
+<style>
+    .table td,th {
+    text-align: right;   
+    }
+    .rotate-45-left {
+    display: inline-block;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    }
+</style>
+
+<form role="form" class="form">
+    <div class="form-group">
+    <h2> States </h2>
+    <div class="row">
+        <div class="form-group">
+            <input  class="form-control" type="number" ng-model="numberStates" ng-change="reset()" />
+        </div> 
+    </div>
+    </div>
+    <div class="form-group">
+    <h2>Machine description</h2>
+        <div class="row">
+                <table>
+                    <tr>
+                        <th> Acids
+                        </th>
+                        <th ng-repeat="state in states">
+                            {{states}}
+                        </th>
+                        <th>
+                        </th>
+                    </tr>
+                    <tr ng-repeat="acid in acids">
+                        <td>{{acid}}
+                        </td>
+                        <td ng-repeat="state in states">
+                            <input type="number" ng-model="emission[acid][state]">
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div class="row">
+                <table>
+                    <tr>
+                        <th>
+                            from to 
+                        </th>
+                        <th ng-repeat="state in states">
+                            {{state}}
+                        </th>
+                    </tr>
+                    <tr ng-repeat="state in states">
+                        <td>
+                            {{state}}
+                        </td>
+                        <td ng-repeat="toState in states">
+                            <input type="number" ng-model="transitions[state][toState]">
+                        </td>
+                    </tr>
+                </table>
+        </div>
+    </div>
+    <div class="form-group">
+    <h2>Sequence</h2>
+    <div class="row">
+        <div class="form-group">
+            <input  class="form-control" type="text" ng-model="sequence" pattern="[ATCG]*" />
+        </div> 
+    </div>
+    </div>
+</form>
+<table>
+    <tr>
+        <th>
+        </th>
+        <th ng-repeat="item in sequence track by $index">
+            {{item}}
+        </th>
+    </tr>
+    <tr ng-repeat="state in states">
+        <td>{{state}}
+        </td>
+        <td ng-repeat="item in sequence track by $index">
+            <strong>{{ resultMx[sequence][item].value}}</strong>
+            {{ resultMx[sequence][item].from}}
+        </td>
+    </tr>
+</table>

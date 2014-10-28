@@ -9,7 +9,7 @@
  * Controller of the bcBootstrapApp
  */
 angular.module('bcBootstrapApp')
-.controller('BcLabCtrl', ['$scope','$http',function ($scope,$http) {
+.controller('BcLabAlignCtrl', ['$scope','$http',function ($scope,$http) {
 
   $scope.availableScoringMx = ['match-missmatch','blosum50','pam250'];
   $scope.currentScoringMx = $scope.availableScoringMx[0];

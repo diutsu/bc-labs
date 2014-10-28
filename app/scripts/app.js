@@ -1,5 +1,4 @@
 'use strict';
-$('[data-toggle="tooltip"]').tooltip({'placement': 'bottom'});
 /**
  * @ngdoc overview
  * @name bcBootstrapApp
@@ -10,12 +9,7 @@ $('[data-toggle="tooltip"]').tooltip({'placement': 'bottom'});
  */
 angular
   .module('bcBootstrapApp', [
-    'ngAnimate',
-    'ngCookies',
-    'ngResource',
     'ngRoute',
-    'ngSanitize',
-    'ngTouch'
   ])
   .config(function ($routeProvider) {
     $routeProvider
@@ -29,7 +23,11 @@ angular
       })
       .when('/BC/Lab01', {
         templateUrl: 'views/bc/lab01.html',
-        controller: 'BcLabCtrl'
+        controller: 'BcLabAlignCtrl'
+      })
+      .when('/BC/Lab02', {
+        templateUrl: 'views/bc/lab02.html',
+        controller: 'BcLabSeqCtrl'
       })
       .otherwise({
         redirectTo: '/'
