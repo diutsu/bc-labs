@@ -1,4 +1,4 @@
-<h1>Lab 01</h2>
+<h1>Lab 05</h2>
 <style>
     .table td,th {
     text-align: right;   
@@ -15,34 +15,47 @@
     <h2> States </h2>
     <div class="row">
         <div class="form-group">
-            <input  class="form-control" type="number" ng-model="numberStates" ng-change="reset()" />
+            <input  class="form-control" type="number" ng-model="numberStates" ng-change="reset()"/>
         </div> 
     </div>
     </div>
     <div class="form-group">
     <h2>Machine description</h2>
         <div class="row">
-                <table>
+                <table class="table">
+                    <tr>
+                      <th>Start Prob</th>
+                        <th ng-repeat="state in states">
+                            {{state}}
+                        </th>
+                    </tr>
+                    <td>start</td>
+                        <td ng-repeat="state in states">
+                            <input type="number" step="any" ng-model="start[state]">
+                        </td>
+                    </tr>
+                </table>
+        </div>
+        <div class="row">
+                <table class="table">
                     <tr>
                         <th> Acids
                         </th>
                         <th ng-repeat="state in states">
-                            {{states}}
-                        </th>
-                        <th>
+                            {{state}}
                         </th>
                     </tr>
                     <tr ng-repeat="acid in acids">
                         <td>{{acid}}
                         </td>
                         <td ng-repeat="state in states">
-                            <input type="number" ng-model="emission[acid][state]">
+                            <input type="number" step="any" ng-model="emission[acid][state]">
                         </td>
                     </tr>
                 </table>
         </div>
         <div class="row">
-                <table>
+                <table class="table">
                     <tr>
                         <th>
                             from to 
@@ -56,7 +69,7 @@
                             {{state}}
                         </td>
                         <td ng-repeat="toState in states">
-                            <input type="number" ng-model="transitions[state][toState]">
+                            <input type="number" step="any" ng-model="transition[state][toState]">
                         </td>
                     </tr>
                 </table>
@@ -70,21 +83,31 @@
         </div> 
     </div>
     </div>
+    <div class="form-group">
+        <button class="btn btn-primary form-control" ng-click="computeHMM()">Calcular</button>
+    </div>
 </form>
-<table>
+<!--Start {{start}}
+Emission {{emission}}
+Transition {{transition}}-->
+<!--Matrix {{modelMx}}-->
+<p>Output:</p>
+<p>State sequence: {{resultStates}}</p>
+<p>Forward Algorithm -  P(x): {{forwardProb}}</p>
+<table class="table">
     <tr>
         <th>
         </th>
         <th ng-repeat="item in sequence track by $index">
-            {{item}}
+          {{item}}
         </th>
     </tr>
     <tr ng-repeat="state in states">
         <td>{{state}}
         </td>
         <td ng-repeat="item in sequence track by $index">
-            <strong>{{ resultMx[sequence][item].value}}</strong>
-            {{ resultMx[sequence][item].from}}
+            <strong>{{ modelMx[$index][$parent.$index].value}}</strong>
+            {{ modelMx[$index][$parent.$index].path}}
         </td>
     </tr>
 </table>
