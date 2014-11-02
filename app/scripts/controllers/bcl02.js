@@ -49,6 +49,8 @@ angular.module('bcBootstrapApp')
     $scope.sequence = "CATGCGGGTTATAAC";
   }
   $scope.computeHMM = function(){
+     $scope.initTime = Date.now();
+
     if($scope.sequence.length > 0){
       $scope.modelMx = new Array( $scope.sequence.length);
       for(var i = 0; i  < $scope.sequence.length; i++){
@@ -72,7 +74,7 @@ angular.module('bcBootstrapApp')
           for(var k = 0; k < $scope.states.length; k++) {
             var tmp = $scope.modelMx[i-1][k].value*$scope.emission[$scope.sequence[i]][$scope.states[j]]*$scope.transition[$scope.states[k]][$scope.states[j]];
             $scope.modelMx[i][j].sum = $scope.modelMx[i][j].sum + $scope.modelMx[i-1][k].sum*$scope.emission[$scope.sequence[i]][$scope.states[j]]*$scope.transition[$scope.states[k]][$scope.states[j]];
-            if (tmp > transitionValue) {
+            if (tmp >= transitionValue) {
               transitionValue = tmp;
               bestPath = $scope.states[k];
             }
@@ -81,7 +83,6 @@ angular.module('bcBootstrapApp')
           $scope.modelMx[i][j].path = bestPath;
         }
       }
-    }
 
     var j = $scope.sequence.length-1;
     var max = 0;
@@ -103,6 +104,9 @@ angular.module('bcBootstrapApp')
       $scope.resultStates.unshift(state);
       state=$scope.modelMx[j][$scope.states.indexOf(state)].path;
     }
+    $scope.totalTime = Date.now() - $scope.initTime;
+    }
+
   }
   $scope.loadDefault();
   $scope.computeHMM();

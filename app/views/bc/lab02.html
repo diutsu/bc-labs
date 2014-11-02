@@ -24,7 +24,7 @@
             <button class="btn btn-info form-control" ng-click="loadDefault()">Carregar Valores</button>
         </div>
         <div class="row">
-            <table class="table">
+            <table class="table  table-condensed">
                 <tr>
                     <th>Start Prob</th>
                     <th ng-repeat="state in states">
@@ -40,7 +40,7 @@
             </table>
         </div>
         <div class="row">
-            <table class="table">
+            <table class="table  table-condensed">
                 <tr>
                     <th> Acids
                     </th>
@@ -58,7 +58,7 @@
             </table>
         </div>
         <div class="row">
-            <table class="table">
+            <table class="table  table-condensed">
                 <tr>
                     <th>
                         from to 
@@ -98,11 +98,11 @@
 
 <!-------------------->
 <!--Matrix {{modelMx}}-->
-<div  ng-if="modelMx">
+<div ng-if="modelMx">
 <p>Best State Probability: <strong>{{ bestValue}}</strong></p>
 <p>Forward Algorithm -  P(x): <strong>{{forwardProb}}</strong></p>
 <p>State sequence:</p>
-<table class="table table-bordered">
+<table class="table  table-bordered">
 <tr>
 <td ng-repeat="state in resultStates track by $index">
 <strong>{{state}}</strong>
@@ -112,23 +112,27 @@
 {{sequence[$index]}}
 </td>
 </tr>
+<tr><td ng-repeat="state in resultStates track by $index">
+<em>{{$index}}</em>
+</td>
+</tr>
 </table>
-
+<p>Time: <em>{{totalTime}}ms</em></p>
 <p><strong>The full table because it's fun</strong></p>
-<table class="table table-bordered">
+<table class="table table-condensed table-bordered table-responsive">
     <tr>
         <th>
         </th>
         <th ng-repeat="item in sequence track by $index">
-            {{item}}
+            <span class="center-block">{{item}}</span>
         </th>
     </tr>
     <tr ng-repeat="state in states">
         <td>{{state}}
         </td>
         <td ng-repeat="item in sequence track by $index">
-            <strong>{{ modelMx[$index][$parent.$index].value}}</strong>
-            {{ modelMx[$index][$parent.$index].path}}
+            <strong>{{ modelMx[$index][$parent.$index].value}}</strong></br>
+            <em>from: </em>{{ modelMx[$index][$parent.$index].path}}
         </td>
     </tr>
 </table>
