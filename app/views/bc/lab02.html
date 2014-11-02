@@ -82,7 +82,7 @@
         <h2>Sequence</h2>
         <div class="row">
             <div class="form-group">
-                <input  class="form-control" type="text" ng-model="sequence" pattern="[ATCG]*" />
+                <input  class="form-control" type="text" ng-model="sequence" pattern="[ATCG]*" ng-change="deleteTable()"/>
             </div> 
         </div>
     </div>
@@ -98,10 +98,24 @@
 
 <!-------------------->
 <!--Matrix {{modelMx}}-->
-<p>Output: {{ bestValue}}</p>
-<p>State sequence: {{resultStates}}</p>
-<p>Forward Algorithm -  P(x): {{forwardProb}}</p>
-<table class="table">
+<div  ng-if="modelMx">
+<p>Best State Probability: <strong>{{ bestValue}}</strong></p>
+<p>Forward Algorithm -  P(x): <strong>{{forwardProb}}</strong></p>
+<p>State sequence:</p>
+<table class="table table-bordered">
+<tr>
+<td ng-repeat="state in resultStates track by $index">
+<strong>{{state}}</strong>
+</td>
+</tr>
+<tr><td ng-repeat="state in resultStates track by $index">
+{{sequence[$index]}}
+</td>
+</tr>
+</table>
+
+<p><strong>The full table because it's fun</strong></p>
+<table class="table table-bordered">
     <tr>
         <th>
         </th>
@@ -118,3 +132,4 @@
         </td>
     </tr>
 </table>
+</div>
