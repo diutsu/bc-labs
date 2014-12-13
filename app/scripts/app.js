@@ -29,6 +29,10 @@ angular
         templateUrl: 'views/bc/lab02.html',
         controller: 'BcLabSeqCtrl'
       })
+      .when('/BC/Lab03', {
+        templateUrl: 'views/bc/lab03.html',
+        controller: 'BcLabMolPhCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });
