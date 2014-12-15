@@ -9,8 +9,8 @@
 	transform: rotate(-45deg);
 }
 </style>
-<div class="row>">
 <form role="form" class="form">
+<div class="row>">
 <h2> Sequences </h2>
 <div class="form-group col-sm-4">
 	<input class="form-control" type="number" ng-model="randomSize" placeholder="Sequence Size"/>
@@ -21,11 +21,13 @@
 <div class="form-group col-sm-4">
 	<button class="btn btn-default form-control " ng-click="randomSeq()">Generate the population</button>
 </div>
-</form>
 </div>
 <div class="row">
-<pre><code contenteditable>{{ fasta }}</code></pre>
+<div class="form-group col-sm-12">
+    <textarea class="form-control" rows="10" ng-model="fasta">{{ fasta }}</textarea>
 </div>
+</div>
+</form>
 
 <div class="row">
 <form role="form" class="form">
@@ -49,12 +51,9 @@
 </div>
 <div>
 Total time: {{ totalTime }}ms<br/>
-<div>
-<p ng-repeat="seq in sequences track by $index">
-{{seq}}
-</p>
+Hamming Distance: {{hammingDist}}<br/>
+Jukes Distance: {{jukes}}
 
 
-<pre><code contenteditable>{{ logtxt }}
-</code></pre>
 </div>
+
