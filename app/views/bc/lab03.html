@@ -1,7 +1,7 @@
 <h1>Lab 03</h2>
 <style>
 .table td,th {
-   text-align: right;   
+   text-align: right;
 }
 .rotate-45-left {
 	display: inline-block;
@@ -34,10 +34,10 @@
 	<input class="form-control" type="number" ng-model="generationsNumber" placeholder="Number Generations"/>
 </div>
 <div class="form-group col-sm-4">
-	<input class="form-control" type="number" ng-model="mr" placeholder="Mutation Rate"/>
+	<input class="form-control" type="number" step="any" ng-model="mr" placeholder="Mutation Rate"/>
 </div>
 <div class="form-group col-sm-4">
-	<input class="form-control" type="number" ng-model="rr" placeholder="Recombination Rate"/>
+	<input class="form-control" type="number" step="any"  ng-model="rr" placeholder="Recombination Rate"/>
 </div>
 <div class="form-group col-sm-4">
 	<input class="form-control" type="number" ng-model="rfl" placeholder="Recombination Fragment Length"/>
@@ -48,7 +48,13 @@
 </form>
 </div>
 <div>
-<pre><code contenteditable>{{ names }}</code><code contenteditable>{{ sequences }}
-</code></pre>
+Total time: {{ totalTime }}ms<br/>
+<div>
+<p ng-repeat="seq in sequences track by $index">
+{{seq}}
+</p>
 
+
+<pre><code contenteditable>{{ logtxt }}
+</code></pre>
 </div>
