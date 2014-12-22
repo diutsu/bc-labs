@@ -1,0 +1,139 @@
+<h1>Lab 05</h2>
+<style>
+    .table td,th {
+    text-align: right;   
+    }
+    .rotate-45-left {
+    display: inline-block;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    }
+</style>
+
+<form role="form" class="form">
+    <div class="form-group">
+        <h2> States </h2>
+        <div class="row">
+                <input  class="form-control" type="number" ng-model="numberStates" ng-change="reset()"/>
+        </div>
+    </div>
+    </div>
+    <div class="form-group">
+        <h2>Machine description</h2>
+        <div class="row">
+            <button class="btn btn-info form-control" ng-click="loadDefault()">Carregar Valores</button>
+        </div>
+        <div class="row">
+            <table class="table  table-condensed">
+                <tr>
+                    <th>Start Prob</th>
+                    <th ng-repeat="state in states">
+                        {{state}}
+                    </th>
+                </tr>
+                <tr>
+                    <td>start</td>
+                    <td ng-repeat="state in states">
+                        <input type="number" step="any" ng-model="start[state]">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <table class="table  table-condensed">
+                <tr>
+                    <th> Acids
+                    </th>
+                    <th ng-repeat="state in states">
+                        {{state}}
+                    </th>
+                </tr>
+                <tr ng-repeat="acid in acids">
+                    <td>{{acid}}
+                    </td>
+                    <td ng-repeat="state in states">
+                        <input type="number" step="any" ng-model="emission[acid][state]">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
+            <table class="table  table-condensed">
+                <tr>
+                    <th>
+                        from to 
+                    </th>
+                    <th ng-repeat="state in states">
+                        {{state}}
+                    </th>
+                </tr>
+                <tr ng-repeat="state in states">
+                    <td>
+                        {{state}}
+                    </td>
+                    <td ng-repeat="toState in states">
+                        <input type="number" step="any" ng-model="transition[state][toState]">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="form-group">
+        <h2>Sequence</h2>
+        <div class="row">
+            <div class="form-group">
+                <input  class="form-control" type="text" ng-model="sequence" pattern="[ATCG]*" ng-change="deleteTable()"/>
+            </div> 
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <button class="btn btn-primary form-control" ng-click="computeHMM()">Calcular</button>
+        </div>
+    </div>
+</form>
+<!--Start {{start}}-->
+<!--Emission {{emission}}-->
+<!--Transition {{transition}}-->
+
+<!-------------------->
+<!--Matrix {{modelMx}}-->
+<div ng-if="modelMx">
+<p>Best State Probability: <strong>{{ bestValue}}</strong></p>
+<p>Forward Algorithm -  P(x): <strong>{{forwardProb}}</strong></p>
+<p>State sequence:</p>
+<table class="table  table-bordered">
+<tr>
+<td ng-repeat="state in resultStates track by $index">
+<strong>{{state}}</strong>
+</td>
+</tr>
+<tr><td ng-repeat="state in resultStates track by $index">
+{{sequence[$index]}}
+</td>
+</tr>
+<tr><td ng-repeat="state in resultStates track by $index">
+<em>{{$index}}</em>
+</td>
+</tr>
+</table>
+<p>Time: <em>{{totalTime}}ms</em></p>
+<p><strong>The full table because it's fun</strong></p>
+<table class="table table-condensed table-bordered table-responsive">
+    <tr>
+        <th>
+        </th>
+        <th ng-repeat="item in sequence track by $index">
+            <span class="center-block">{{item}}</span>
+        </th>
+    </tr>
+    <tr ng-repeat="state in states">
+        <td>{{state}}
+        </td>
+        <td ng-repeat="item in sequence track by $index">
+            <strong>{{ modelMx[$index][$parent.$index].value}}</strong></br>
+            <em>from: </em>{{ modelMx[$index][$parent.$index].path}}
+        </td>
+    </tr>
+</table>
+</div>

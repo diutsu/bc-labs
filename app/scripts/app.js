@@ -21,16 +21,16 @@ angular
         templateUrl: 'views/about.html',
         controller: 'AboutCtrl'
       })
-      .when('/BC/Lab01', {
-        templateUrl: 'views/bc/lab01.html',
-        controller: 'BcLabAlignCtrl'
-      })
       .when('/BC/Lab02', {
         templateUrl: 'views/bc/lab02.html',
+        controller: 'BcLabAlignCtrl'
+      })
+      .when('/BC/Lab05', {
+        templateUrl: 'views/bc/lab05.html',
         controller: 'BcLabSeqCtrl'
       })
-      .when('/BC/Lab03', {
-        templateUrl: 'views/bc/lab03.html',
+      .when('/BC/Lab08', {
+        templateUrl: 'views/bc/lab08.html',
         controller: 'BcLabMolPhCtrl'
       })
       .otherwise({
