@@ -1,0 +1,117 @@
+<h1>Lab 03</h2>
+	<style>
+		#canvas {border: 1px;}
+		.table td,th {
+			text-align: right;
+		}
+		.rotate-45-left {
+			display: inline-block;
+			-webkit-transform: rotate(-45deg);
+			transform: rotate(-45deg);
+		}
+		path {
+			stroke: steelblue;
+			stroke-width: 2;
+			fill: none;
+		}
+		.green {
+			stroke: green;
+		}
+
+
+		line {
+			stroke: black;
+		}
+
+		text {
+			font-family: Arial;
+			font-size: 9pt;
+		}
+
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: grey;
+			stroke-width: 1;
+			shape-rendering: crispEdges;
+		}
+	</style>
+	<div class="row">
+		<form role="form" class="form-horizontal">
+			<h2> Sequence Generation </h2>
+			<label for="seqSize" class="col-sm-3" control-label>Sequence Size</label>
+			<div class="form-group col-sm-3">
+				<input name="seqSize" class="form-control" type="number" ng-model="sequenceSize" placeholder="Sequence Size"/>
+			</div>
+			<label for="popSize" class="col-sm-3" control-label>Population Size</label>
+			<div class="form-group col-sm-3">
+				<input name="popSize" class="form-control" type="number" ng-model="populationSize" placeholder="Population Size"/>
+			</div>
+
+			<label for="allEqual" class="col-sm-5" control-label>All the begin sequences are equal</label>
+			<div class="form-group col-sm-3">
+				<div class=" col-sm-1">
+					<input type="checkbox"  ng-model="allAreBornEqual">
+				</div>
+			</div>
+
+
+
+			<div class="form-group col-sm-12">
+				<button class="btn btn-default form-control " ng-click="randomSeq()">Generate the population</button>
+			</div>
+			<div class="form-group col-sm-12">
+				<textarea class="form-control" rows="10" ng-model="fasta">{{ fasta }}</textarea>
+			</div>
+		</form>
+	</div>
+
+	<div class="row">
+		<form role="form" class="form">
+			<h2> Evolution Simulator </h2>
+			<label for="generations" class="col-sm-3" control-label>Number of Generations</label>
+			<div class="form-group col-sm-3">
+				<input name="generations" class="form-control" type="number" ng-model="generationsNumber" placeholder="Number Generations"/>
+			</div>
+			<label for="mr" class="col-sm-3" control-label>Mutation Rate</label>
+			<div class="form-group col-sm-3">
+				<input name="mr" class="form-control" type="number" step="any" ng-model="mr" placeholder="Mutation Rate"/>
+			</div>
+			<label for="rr" class="col-sm-3" control-label>Recombination Rate</label>
+			<div class="form-group col-sm-3">
+				<input name="rr" class="form-control" type="number" step="any"  ng-model="rr" placeholder="Recombination Rate"/>
+			</div>
+			<label for="rfl" class="col-sm-3" control-label>Recombination Fragment Length</label>
+			<div class="form-group col-sm-3">
+				<input name="rfl" class="form-control" type="number" ng-model="rfl" placeholder="Recombination Fragment Length"/>
+			</div>
+			<div class="form-group col-sm-12">
+				<button class="btn btn-default form-control " ng-click="evolve()">Evolve</button>
+			</div>
+		</form>
+	</div>
+	<div ng-show="outFasta">
+		<h3>Fasta Output</h3>
+		Total time: {{ totalTime }}ms<br/>
+
+		<h3> Hamming Distance (Blue) </h3>
+		<div id="hammingGr">
+		</div>
+		<h3> Jukes-Cantor Distance (Green) </h3>
+		<div id="jukesGr">
+		</div>
+		<h3> Both distances for comparison (Same Colours)</h3>
+		<div id="bothGr">
+		</div>
+		<h3>Output as fasta </h3>
+		<pre><code>{{ outFasta }}</pre></code>
+		<h3> Raw data </h3>
+		<div>
+			Hamming distance
+			<pre><code>{{ hamming }}</code></pre>
+			Jukes-Cantor distance
+			<pre><code>{{ jukes }}</code></pre>
+		</div>
+	</div>
+
+

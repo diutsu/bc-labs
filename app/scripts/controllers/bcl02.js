@@ -9,105 +9,215 @@
  * Controller of the bcBootstrapApp
  */
 angular.module('bcBootstrapApp')
-.controller('BcLabSeqCtrl', ['$scope','$http',function ($scope,$http) {
+.controller('BcLabAlignCtrl', ['$scope','$http',function ($scope,$http) {
 
-  $scope.acids = ['A','C','G','T'];
-  $scope.numberStates = 2;
-    $scope.deleteTable = function (){
-    delete $scope.modelMx;
+  $scope.availableScoringMx = ['match-missmatch','blosum50','pam250'];
+  $scope.currentScoringMx = $scope.availableScoringMx[0];
+
+  $scope.acid = ['A','R','N','D','C','Q','G','E','H','I','L','K','M','F','P','S','T','W','Y','V'];
+
+  $scope.randomSeq = function(seq){
+    var rndSeq = "";
+    for(var i = 0; i < $scope.randomSize; i++){
+      rndSeq = rndSeq.concat($scope.acid[ Math.floor(Math.random()*($scope.acid.length-1))])
+    }
+    if(seq == 1){
+      $scope.seq1 = rndSeq;
+    } else {
+      $scope.seq2 = rndSeq;
+    }
   }
-  $scope.reset = function (){
-    delete $scope.modelMx;
-    $scope.states = new Array($scope.numberStates);
-    $scope.start = {};
-    $scope.transition = {};
-    for(var i = 0; i < $scope.numberStates; i++){
-      $scope.states[i] ="S"+(i+1);
-      $scope.start[$scope.states[i]] = 1/$scope.numberStates;
-      $scope.transition[$scope.states[i]] = {};
-    };
-    for(var i = 0; i < $scope.numberStates; i++){
-      for(var j = 0 ; j < $scope.numberStates; j++){
-        $scope.transition[$scope.states[i]][$scope.states[j]] = 0.5;
+
+  $scope.updateMatrix = function(){
+    if($scope.currentScoringMx != 'match-missmatch'){
+      delete $scope.matchMissmatch;
+      $http({
+        method: 'GET',
+        url: 'public/matrices/'+$scope.currentScoringMx+'.json',
+      }).success(function(data){
+        $scope.matrix = data;
+      })
+      .error(function(data) {
+        $scope.error = data;
+      });
+    } else {
+      $scope.matrix = {}
+      $scope.matchMissmatch = true;
+      for(var i = 0; i<$scope.acid.length; i++){
+        $scope.matrix[$scope.acid[i]] = {}
+        for(var j = 0; j<$scope.acid.length; j++){
+          $scope.matrix[$scope.acid[i]][$scope.acid[j]] = $scope.missmatchScore;
+          if(i==j){
+            $scope.matrix[$scope.acid[i]][$scope.acid[j]] = $scope.matchScore;
+          }
+        }
       }
-    };
-    $scope.emission = {};
-    for(var i = 0; i < $scope.acids.length; i++){
-      $scope.emission[$scope.acids[i]] = {};
-      for(var j = 0; j < $scope.states.length; j++){
-        $scope.emission[$scope.acids[i]][$scope.states[j]] = .2;
-      }
+
     }
   };
 
-  $scope.loadDefault = function(){
-    $scope.numberStates = 3;
-    $scope.states = ["S1","S2","S3"];
-    $scope.start = {"S1":0.3333333333333333,"S2":0.3333333333333333,"S3":0.3333333333333333};
-    $scope.emission = {"A":{"S1":0.4,"S2":0.1,"S3":0.4},"C":{"S1":0,"S2":0.4,"S3":0.3},"G":{"S1":0.3,"S2":0.4,"S3":0},"T":{"S1":0.3,"S2":0.1,"S3":0.3}};
-    $scope.transition = {"S1":{"S1":0.6,"S2":0.4,"S3":0},"S2":{"S1":0.25,"S2":0.5,"S3":0.25},"S3":{"S1":0.25,"S2":0.25,"S3":0.5}};
-    $scope.sequence = "CATGCGGGTTATAAC";
-  }
-  $scope.computeHMM = function(){
-     $scope.initTime = Date.now();
+  $scope.computeAlign = function(){
+    if($scope.seq1 && $scope.seq2 && !isNaN($scope.gapPenalty)){
+      $scope.results= [];
+      $scope.dspMx= false;
+        $scope.initTime = Date.now();
 
-    if($scope.sequence.length > 0){
-      $scope.modelMx = new Array( $scope.sequence.length);
-      for(var i = 0; i  < $scope.sequence.length; i++){
-        $scope.modelMx[i] = new Array($scope.states.length);
-        for(var j = 0; j  < $scope.states.length; j++){
-          $scope.modelMx[i][j] = {};
+        var alignMx = new Array($scope.seq1.length);
+
+        for(var i = 0; i < $scope.seq1.length+1; i++){
+          alignMx[i] = new Array($scope.seq2.length);
+          for(var j = 0; j < $scope.seq2.length+1;j++){
+            alignMx[i][j] = {};
+          }
+        }
+
+        alignMx[0][0].best=0;
+        for(var i = 1; i < $scope.seq1.length+1; i++){
+          alignMx[i][0].horiz = alignMx[i-1][0].best + $scope.gapPenalty;
+          alignMx[i][0].best = alignMx[i-1][0].best + $scope.gapPenalty;
+        }
+        for(var i = 1; i < $scope.seq2.length+1; i++) {
+          alignMx[0][i].vert = alignMx[0][i-1].best + $scope.gapPenalty;
+          alignMx[0][i].best = alignMx[0][i-1].best + $scope.gapPenalty;
+        }
+        for(var i = 1; i < $scope.seq1.length+1; i++){
+          for(var j = 1; j < $scope.seq2.length+1; j++) {
+            var horiz = alignMx[i-1][j].best + $scope.gapPenalty;
+            var vert = alignMx[i][j-1].best + $scope.gapPenalty;
+            var diag = alignMx[i-1][j-1].best +
+                $scope.matrix[$scope.seq1[i-1]][$scope.seq2[j-1]];
+
+            alignMx[i][j].best = Math.max(diag,Math.max(vert,horiz));
+            alignMx[i][j].diag = diag == alignMx[i][j].best;
+            alignMx[i][j].vert = vert == alignMx[i][j].best;
+            alignMx[i][j].horiz = horiz == alignMx[i][j].best;
+
+          }
+        }
+
+        $scope.midTime = Date.now() - $scope.initTime;
+        $scope.glbAlign = alignMx;
+        $scope.traceback();
+        $scope.totalTime = Date.now() - $scope.initTime;
+        $scope.seqDsp1 = "-".concat($scope.seq1);
+        $scope.seqDsp2 = "-".concat($scope.seq2);
+        //$scope.computeLclAlign();
+        //$scope.dspMx = $scope.seqDsp1.length < 15 && $scope.seqDsp2.length < 15;
+    }
+  };
+
+
+
+  $scope.traceback = function(i,j,result){
+    if(typeof(result)==='undefined'){
+      result ={};
+      result.res1 = "";
+      result.res2 = "";
+      i = $scope.seq1.length;
+      j = $scope.seq2.length;
+    }
+    while(i > 0  || j > 0){
+      if($scope.glbAlign[i][j].diag) {
+        result.res1  = $scope.seq1[i-1].concat(result.res1 );
+        result.res2 = $scope.seq2[j-1].concat(result.res2);
+        if($scope.glbAlign[i][j].horiz){
+          $scope.traceback(i-1,j,{
+           res1: $scope.seq1[i-1].concat(result.res1 ),
+           res2: "-".concat(result.res2)
+          });
+        }
+        if($scope.glbAlign[i][j].vert){
+          $scope.traceback(i,j-1,{
+            res1: "-".concat(result.res1 ),
+            res2: $scope.seq2[j-1].concat(result.res2)
+          });
+        }
+        i--;
+        j--;
+      } else if($scope.glbAlign[i][j].horiz) {
+          result.res1  = $scope.seq1[i-1].concat(result.res1 );
+          result.res2 = "-".concat(result.res2);
+          if($scope.glbAlign[i][j].vert) {
+            $scope.traceback(i,j-1,{
+              res1: "-".concat(result.res1 ),
+              res2: $scope.seq2[j-1].concat(result.res2)
+            });
+          } 
+          i--;
+      } else if($scope.glbAlign[i][j].vert) {
+          result.res1  = "-".concat(result.res1 );
+          result.res2 = $scope.seq2[j-1].concat(result.res2);
+          j--;
+        }
+    }
+    $scope.results.push(result);
+  };
+
+
+
+
+/*  $scope.computeLclAlign = function(){
+    if($scope.seq1 && $scope.seq2 && $scope.gapPenalty){
+      var alignMx = new Array($scope.seq1.length);
+
+      for(var i = 0; i < $scope.seq1.length+1; i++){
+        alignMx[i] = new Array($scope.seq2.length);
+        for(var j = 0; j < $scope.seq2.length+1;j++){
+          alignMx[i][j] = {};
         }
       }
-      // first iteration is a bit diferent  
-      for(var j = 0; j < $scope.states.length; j++){
-        $scope.modelMx[0][j].value = $scope.emission[$scope.sequence[0]][$scope.states[j]]*$scope.start[$scope.states[j]];
-        $scope.modelMx[0][j].sum = $scope.modelMx[0][j].value;
-        $scope.modelMx[0][j].path = $scope.states[j];
-      }
 
-      for(var i = 1; i < $scope.sequence.length; i++){
-        for(var j = 0; j < $scope.states.length; j++){
-          var bestPath = "";
-          var transitionValue = 0
-            $scope.modelMx[i][j].sum = 0;
-          for(var k = 0; k < $scope.states.length; k++) {
-            var tmp = $scope.modelMx[i-1][k].value*$scope.emission[$scope.sequence[i]][$scope.states[j]]*$scope.transition[$scope.states[k]][$scope.states[j]];
-            $scope.modelMx[i][j].sum = $scope.modelMx[i][j].sum + $scope.modelMx[i-1][k].sum*$scope.emission[$scope.sequence[i]][$scope.states[j]]*$scope.transition[$scope.states[k]][$scope.states[j]];
-            if (tmp >= transitionValue) {
-              transitionValue = tmp;
-              bestPath = $scope.states[k];
+      alignMx[0][0].best=0;
+      for(var i = 1; i < $scope.seq1.length+1; i++){
+        alignMx[i][0].horiz = alignMx[i-1][0].best + $scope.gapPenalty;
+        alignMx[i][0].best = Math.max(0,alignMx[i-1][0].best + $scope.gapPenalty);
+      }
+      for(var i = 1; i < $scope.seq2.length+1; i++) {
+        alignMx[0][i].vert = alignMx[0][i-1].best + $scope.gapPenalty;
+        alignMx[0][i].best = Math.max(0,alignMx[0][i-1].best + $scope.gapPenalty);
+      }
+      for(var i = 1; i < $scope.seq1.length+1; i++){
+        for(var j = 1; j < $scope.seq2.length+1; j++) {
+          alignMx[i][j].horiz = alignMx[i-1][j].best + $scope.gapPenalty;
+          alignMx[i][j].vert = alignMx[i][j-1].best + $scope.gapPenalty;
+
+          if($scope.matchMissmatch){
+            if($scope.seq1[i-1] == $scope.seq2[j-1]) {
+              alignMx[i][j].diag = alignMx[i-1][j-1].best + $scope.matchScore;}
+            else {
+              alignMx[i][j].diag = alignMx[i-1][j-1].best + $scope.missmatchScore;
             }
           }
-          $scope.modelMx[i][j].value = transitionValue;
-          $scope.modelMx[i][j].path = bestPath;
+          else{
+            alignMx[i][j].diag = alignMx[i-1][j-1].best +
+              $scope.matrix[$scope.seq1[i-1]][$scope.seq2[j-1]];
+          }
+
+          alignMx[i][j].best = Math.max(0, Math.max(alignMx[i][j].diag,Math.max(
+                  alignMx[i][j].vert,alignMx[i][j].horiz)));
         }
       }
+      $scope.lclAlign = alignMx;
 
-    var j = $scope.sequence.length-1;
-    var max = 0;
-    var state = "";
-    $scope.resultStates = new Array();
-
-    $scope.forwardProb = 0;
-    for(var i = 0;i < $scope.states.length; i++){
-      $scope.forwardProb = $scope.forwardProb + $scope.modelMx[$scope.sequence.length-1][i].sum;
-      if($scope.modelMx[j][i].value > max){
-        max= $scope.modelMx[j][i].value;
-        state = $scope.states[i];
-
-      }
     }
-
-    $scope.bestValue = max;
-    for(j = $scope.sequence.length-1; j>= 0; j--){
-      $scope.resultStates.unshift(state);
-      state=$scope.modelMx[j][$scope.states.indexOf(state)].path;
-    }
-    $scope.totalTime = Date.now() - $scope.initTime;
-    }
-
-  }
-  $scope.loadDefault();
-  $scope.computeHMM();
+  };*/
 }]);
+
+angular.module('bcBootstrapApp').directive('capitalizeFirst', function($parse) {
+  return {
+    require: 'ngModel',
+    link: function(scope, element, attrs, modelCtrl) {
+      var capitalize = function(inputValue) {
+        if (inputValue === undefined) { inputValue = ''; }
+        var capitalized = inputValue.toUpperCase();
+        if(capitalized !== inputValue) {
+          modelCtrl.$setViewValue(capitalized);
+          modelCtrl.$render();
+        }         
+        return capitalized;
+      }
+      modelCtrl.$parsers.push(capitalize);
+      capitalize($parse(attrs.ngModel)(scope)); // capitalize initial value
+    }
+  };
+});
