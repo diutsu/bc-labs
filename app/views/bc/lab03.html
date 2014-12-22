@@ -1,5 +1,6 @@
 <h1>Lab 03</h2>
 <style>
+#canvas {border: 1px;}
 .table td,th {
    text-align: right;
 }
@@ -7,6 +8,32 @@
 	display: inline-block;
 	-webkit-transform: rotate(-45deg);
 	transform: rotate(-45deg);
+}
+path { 
+    stroke: steelblue;
+    stroke-width: 2;
+    fill: none;
+}
+.green {
+    stroke: green;
+}
+
+ 
+line {
+    stroke: black;
+}
+ 
+text {
+    font-family: Arial;
+    font-size: 9pt;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
 }
 </style>
 <form role="form" class="form">
@@ -49,11 +76,28 @@
 </div>
 </form>
 </div>
-<div>
+<div ng-show="outFasta">
+<h3>Fasta Output</h3>
 Total time: {{ totalTime }}ms<br/>
-Hamming Distance: {{hammingDist}}<br/>
-Jukes Distance: {{jukes}}
-
-
+	
+<h3> Hamming Distance (Blue) </h3>
+<div id="hammingGr">
 </div>
+<h3> Jukes-Cantor Distance (Green) </h3>
+<div id="jukesGr">
+</div>
+<h3> Both distances for comparison (Same Colours)</h3>
+<div id="bothGr">
+</div>
+<h3>Output as fasta </h3>
+<pre><code>{{ outFasta }}</pre></code>
+<h3> Raw data </h3>
+<div>
+    Hamming distance
+    <pre><code>{{ hamming }}</code></pre>
+    Jukes-Cantor distance
+    <pre><code>{{ jukes }}</code></pre>
+</div>
+</div>
+
 
