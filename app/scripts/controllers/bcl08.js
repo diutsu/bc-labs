@@ -52,14 +52,12 @@ angular.module('bcBootstrapApp')
         var offset = 0;
         if($scope.mergeFasta) {
             $scope.outFasta = $scope.fasta;
-            offset=$scope.populationSize;
         }   else {
             $scope.outFasta = "";
-            offset=0;
         }
 
         for(var i = 0; i < $scope.populationSize; i++){
-            $scope.outFasta = $scope.outFasta.concat(">sequence_").concat(i+offset+1).concat("\n")
+            $scope.outFasta = $scope.outFasta.concat(">evolved_").concat(i+1).concat("\n")
             for(var j = 0; j < $scope.sequenceSize; j++){
                 $scope.outFasta = $scope.outFasta.concat($scope.sequences[i][j]);
             }
